@@ -23,7 +23,7 @@ export class FireService {
     let messageDTO: MessageDTO = {
       messageContent: sendThisMessage,
       timestamp: new Date(),
-      user: 'Some user'
+      user: 'some user'
     }
     this.firestore
       .collection('myChat')
@@ -41,7 +41,7 @@ export class FireService {
             this.messages.push({id: change.doc.id, data: change.doc.data()});
           }
           if (change.type == 'modified') {
-            const index = this.messages.findIndex(document => document.id != change.doc.id);
+            const index = this.messages.findIndex(document => document.id == change.doc.id);
             this.messages[index] =
               {id: change.doc.id, data: change.doc.data()}
           }
