@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/app'
+import 'firebase/compat/firestore';
 
 import * as config from '../../firebaseconfig.js'
 @Injectable({
@@ -13,7 +14,7 @@ export class FireService {
   messages: any[] = [];
 
   constructor() {
-    this.firebaseApplication = firebase.initializeApp(config.firebaseConfig);
+    this.firebaseApplication = firebase.initializeApp(config.firebaseconfig);
     this.firestore = firebase.firestore();
     this.getMessages();
   }
