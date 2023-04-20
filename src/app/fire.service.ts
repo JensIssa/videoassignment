@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/app'
 import 'firebase/compat/firestore';
+import 'firebase/compat/auth'
 
 import * as config from '../../firebaseconfig.js'
 @Injectable({
@@ -12,10 +13,18 @@ export class FireService {
   firebaseApplication;
   firestore: firebase.firestore.Firestore;
   messages: any[] = [];
+  auth: firebase.auth.Auth;
 
   constructor() {
-    this.firebaseApplication = firebase.initializeApp(config.firebaseconfig);
+    this.firebaseApplication = firebase.initializeApp(config.firebaseConfig);
     this.firestore = firebase.firestore();
+    this.auth = firebase.auth();
+
+    this.auth.onAuthStateChanged((user) => {
+      if (user){
+        this.getMessages();
+      }
+    });
     this.getMessages();
   }
 
@@ -50,6 +59,17 @@ export class FireService {
           }
         })
       })
+  }
+
+  register(email: string, password: string) : void {
+    this.auth.createUserWithEmailAndPassword(email, password);
+  }
+
+  signIn(email: string, password: string): void{
+    this.auth.signInWithEmailAndPassword(email, password);
+  }
+  signOut(): void{
+    this.auth.signOut();
   }
 }
 export interface MessageDTO {
