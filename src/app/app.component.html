@@ -9,8 +9,11 @@
 
 <div *ngIf="fireService.auth.currentUser">
 
-  <h1> Welcome!, {{fireService.auth.currentUser.email}}</h1>
+  <h1>
+    <img (click)="fileInput.click()" style="max-height: 60px" [src]="fireService.currentlySignedInUserAvatarUrl">
+    Welcome!, {{fireService.auth.currentUser.email}}</h1>
   <button (click)="fireService.signOut()"> Sign out</button>
+  <input (change)="fireService.updateUserImage($event)" hidden #fileInput type="file">
   <input [(ngModel)]="sendThisMessage">
   <button (click)="fireService.sendMessage(sendThisMessage)">send message</button>
   <p *ngFor="let m of fireService.messages">

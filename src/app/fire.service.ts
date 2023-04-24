@@ -3,6 +3,7 @@ import firebase from 'firebase/compat/app'
 import 'firebase/compat/app'
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth'
+import 'firebase/compat/storage'
 
 import * as config from '../../firebaseconfig.js'
 @Injectable({
@@ -14,20 +15,39 @@ export class FireService {
   firestore: firebase.firestore.Firestore;
   messages: any[] = [];
   auth: firebase.auth.Auth;
+  storage: firebase.storage.Storage;
+  currentlySignedInUserAvatarUrl: string = "https://i.pinimg.com/originals/a1/87/63/a187636bf41b53a885a204ed4cb89ffd.png";
 
   constructor() {
     this.firebaseApplication = firebase.initializeApp(config.firebaseConfig);
     this.firestore = firebase.firestore();
     this.auth = firebase.auth();
+    this.storage = firebase.storage();
 
     this.auth.onAuthStateChanged((user) => {
       if (user){
         this.getMessages();
+        this.getImageOfSignedInUser();
       }
     });
     this.getMessages();
   }
 
+  async getImageOfSignedInUser() {
+    this.currentlySignedInUserAvatarUrl =  await this.storage
+      .ref('avatars')
+      .child(this.auth.currentUser?.uid + '')
+      .getDownloadURL();
+  }
+
+  async updateUserImage($event){
+    const img = $event.target.files[0];
+    const uploadTask = await this.storage
+      .ref('avatars')
+      .child(this.auth.currentUser?.uid + '')
+      .put(img);
+    this.currentlySignedInUserAvatarUrl = await uploadTask.ref.getDownloadURL();
+  }
   sendMessage(sendThisMessage: any) {
     let messageDTO: MessageDTO = {
       messageContent: sendThisMessage,
